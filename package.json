@@ -1,0 +1,20 @@
+{
+  "name": "api-brasileirao",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrenoC616/api-brasileirao.git"
+  },
+  "keywords": [],
+  "author": "Breno C",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrenoC616/api-brasileirao/issues"
+  },
+  "homepage": "https://github.com/BrenoC616/api-brasileirao#readme"
+}
