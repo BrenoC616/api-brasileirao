@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/BrenoC616/api-brasileirao/issues"
   },
-  "homepage": "https://github.com/BrenoC616/api-brasileirao#readme"
+  "homepage": "https://github.com/BrenoC616/api-brasileirao#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "puppeteer": "^15.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
 }
