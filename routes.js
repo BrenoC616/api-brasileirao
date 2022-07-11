@@ -9,6 +9,6 @@ routes.get("/", (req, res) => {
   });
 });
 
-routes.get("/get", controller.getData);
+routes.get("/:serie", controller.getData);
 
 module.exports = routes;

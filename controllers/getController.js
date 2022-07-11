@@ -2,148 +2,156 @@ const puppeteer = require("puppeteer");
 
 module.exports = {
   async getData(req, res) {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(
-      "https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-a/2022"
-    );
+    const { serie } = req.params;
+    const series = ["a", "b", "c"];
+    try {
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
 
-    const data = await page.evaluate(() => {
-      let array = [];
-      let i = 0;
-      let name = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => element.firstChild.lastChild.innerText
-      );
+      if (series.includes(serie)) {
+        await page.goto(
+          `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-${serie}/2022`
+        );
+      }
 
-      let points = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[1].innerText)
-      );
-
-      let matches = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[2].innerText)
-      );
-
-      let victories = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[3].innerText)
-      );
-
-      let draws = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[4].innerText)
-      );
-
-      let defeats = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[5].innerText)
-      );
-
-      let goalsFor = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[6].innerText)
-      );
-
-      let goalsAgainst = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[7].innerText)
-      );
-
-      let yellowCards = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[9].innerText)
-      );
-
-      let redCards = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[10].innerText)
-      );
-
-      let performance = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => parseInt(element.cells[11].innerText)
-      );
-
-      let previousResults = [];
-
-      for (let j = 0; j < 20; j++) {
-        let values = Array.from(
+      const data = await page.evaluate(() => {
+        const name = Array.from(
           document.querySelectorAll(
             "#app > #menu-panel > article table .expand-trigger"
-          )[j].cells[12].children,
-          (element) => {
-            switch (element.innerText) {
-              case "V":
-                return "Victory";
-              case "E":
-                return "Draw";
-              case "D":
-                return "Defeat";
-              default:
-                break;
-            }
-          }
+          ),
+          (element) => element.firstChild.lastChild.innerText
         );
-        previousResults.push(values);
-      }
 
-      let nextMatch = Array.from(
-        document.querySelectorAll(
-          "#app > #menu-panel > article table .expand-trigger"
-        ),
-        (element) => element.cells[13].firstChild.title
-      );
+        const points = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[1].innerText)
+        );
 
-      while (i < 20) {
-        array.push({
-          position: i+1,
-          name: name[i],
-          points: points[i],
-          matches: matches[i],
-          victories: victories[i],
-          draws: draws[i],
-          defeats: defeats[i],
-          goalsFor: goalsFor[i],
-          goalsAgainst: goalsAgainst[i],
-          goalsDifference: goalsFor[i] - goalsAgainst[i],
-          yellowCards: yellowCards[i],
-          redCards: redCards[i],
-          performance: performance[i] + "%",
-          previousResults: previousResults[i],
-          nextMatch: nextMatch[i],
-        });
-        i++;
-      }
+        const matches = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[2].innerText)
+        );
 
-      return array;
-    });
+        const victories = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[3].innerText)
+        );
 
-    res.status(200).json(data);
+        const draws = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[4].innerText)
+        );
 
-    await browser.close();
+        const defeats = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[5].innerText)
+        );
+
+        const goalsFor = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[6].innerText)
+        );
+
+        const goalsAgainst = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[7].innerText)
+        );
+
+        const yellowCards = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[9].innerText)
+        );
+
+        const redCards = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[10].innerText)
+        );
+
+        const performance = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => parseInt(element.cells[11].innerText)
+        );
+
+        let previousResults = [];
+
+        for (let j = 0; j < 20; j++) {
+          const values = Array.from(
+            document.querySelectorAll(
+              "#app > #menu-panel > article table .expand-trigger"
+            )[j].cells[12].children,
+            (element) => {
+              switch (element.innerText) {
+                case "V":
+                  return "Victory";
+                case "E":
+                  return "Draw";
+                case "D":
+                  return "Defeat";
+                default:
+                  break;
+              }
+            }
+          );
+          previousResults.push(values);
+        }
+
+        const nextMatch = Array.from(
+          document.querySelectorAll(
+            "#app > #menu-panel > article table .expand-trigger"
+          ),
+          (element) => element.cells[13].firstChild.title
+        );
+
+        let object = {};
+
+        for (let i = 0; i < 20; i++) {
+          object[i + 1] = {
+            position: i + 1,
+            name: name[i],
+            points: points[i],
+            matches: matches[i],
+            victories: victories[i],
+            draws: draws[i],
+            defeats: defeats[i],
+            goalsFor: goalsFor[i],
+            goalsAgainst: goalsAgainst[i],
+            goalsDifference: goalsFor[i] - goalsAgainst[i],
+            yellowCards: yellowCards[i],
+            redCards: redCards[i],
+            performance: performance[i] + "%",
+            previousResults: previousResults[i],
+            nextMatch: nextMatch[i],
+          };
+        }
+
+        return object;
+      });
+
+      res.status(200).json(data);
+
+      await browser.close();
+    } catch (error) {
+      res.status(400).json({ message: "Bad Request", error: error.message });
+    }
   },
 };
