@@ -5,7 +5,10 @@ module.exports = {
     const { serie } = req.params;
     const series = ["a", "b", "c"];
     try {
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ["--no-sandbox"],
+      });
       const page = await browser.newPage();
 
       if (series.includes(serie)) {
