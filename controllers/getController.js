@@ -2,8 +2,6 @@ const puppeteer = require("puppeteer");
 
 module.exports = {
   async getData(req, res) {
-    //const { serie } = req.params;
-    //const series = ["a", "b", "c"];
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -11,11 +9,9 @@ module.exports = {
       });
       const page = await browser.newPage();
 
-      //if (series.includes(serie)) {
       await page.goto(
         `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-a/2022`
       );
-      //}
 
       const data = await page.evaluate(() => {
         const clubsNodeList = document.querySelectorAll(
@@ -24,14 +20,27 @@ module.exports = {
 
         const clubsStats = [...clubsNodeList];
 
-        let previousResults = [];
+        let object = {};
 
-        for (let j = 0; j < 20; j++) {
-          const values = Array.from(
-            document.querySelectorAll(
-              "#app > #menu-panel > article table .expand-trigger"
-            )[j].cells[12].children,
-            (element) => {
+        clubsStats.map((club, index) => {
+          const prevHTMLcollection = club.cells[12].children;
+          const previousResultsArray = [...prevHTMLcollection];
+
+          object[index + 1] = {
+            position: index + 1,
+            name: club.cells[0].children[4].innerText,
+            points: parseInt(club.cells[1].innerText),
+            matches: parseInt(club.cells[2].innerText),
+            victories: parseInt(club.cells[3].innerText),
+            draws: parseInt(club.cells[4].innerText),
+            defeats: parseInt(club.cells[5].innerText),
+            goalsFor: parseInt(club.cells[6].innerText),
+            goalsAgainst: parseInt(club.cells[7].innerText),
+            goalsDifference: parseInt(club.cells[8].innerText),
+            yellowCards: parseInt(club.cells[9].innerText),
+            redCards: parseInt(club.cells[10].innerText),
+            performance: club.cells[11].innerText + "%",
+            previousResults: previousResultsArray.map((element) => {
               switch (element.innerText) {
                 case "V":
                   return "Victory";
@@ -42,32 +51,10 @@ module.exports = {
                 default:
                   break;
               }
-            }
-          );
-          previousResults.push(values);
-        }
-
-        let object = {};
-
-        for (let i = 0; i < 20; i++) {
-          object[i + 1] = {
-            position: i + 1,
-            name: clubsStats[i].cells[0].children[4].innerText,
-            points: clubsStats[i].cells[1].innerText,
-            matches: clubsStats[i].cells[2].innerText,
-            victories: clubsStats[i].cells[3].innerText,
-            draws: clubsStats[i].cells[4].innerText,
-            defeats: clubsStats[i].cells[5].innerText,
-            goalsFor: clubsStats[i].cells[6].innerText,
-            goalsAgainst: clubsStats[i].cells[7].innerText,
-            goalsDifference: clubsStats[i].cells[8].innerText,
-            yellowCards: clubsStats[i].cells[9].innerText,
-            redCards: clubsStats[i].cells[10].innerText,
-            performance: clubsStats[i].cells[11].innerText + "%",
-            previousResults: previousResults[i],
-            nextMatch: clubsStats[i].cells[13].firstChild.title,
+            }),
+            nextMatch: club.cells[13].firstChild.title,
           };
-        }
+        });
 
         return object;
       });
