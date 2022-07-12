@@ -3,9 +3,9 @@ const app = express();
 const routes = require("./routes.js");
 
 const setCache = (req, res, next) => {
-  const period = 60 * 5;
+  const period = 60 * 60;
   if (req.method == "GET") {
-    res.set("Cache-control", `public, max-age=${period}`);
+    res.set("Cache-control", `public, stale-while-revalidate=${period}`);
   } else {
     res.set("Cache-control", `no-store`);
   }
