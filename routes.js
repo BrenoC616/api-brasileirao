@@ -5,10 +5,10 @@ const routes = express.Router();
 
 routes.get("/", (req, res) => {
   return res.status(200).json({
-    message: "Success!",
+    message: "API is online!",
   });
 });
 
-routes.get("/:serie", controller.getData);
+routes.get("/get", controller.getData);
 
 module.exports = routes;

@@ -5,10 +5,11 @@ const PORT = 3333;
 
 app.use(routes);
 
-app.listen(process.env.PORT || 3000, function () {
+app.listen(process.env.PORT || 3000, function (error) {
+  if (error) throw error;
   console.log(
-    "Express server listening on port %d in %s mode",
-    this.address().port,
-    app.settings.env
+    `Express server listening on http://localhost:${this.address().port} in ${
+      app.settings.env
+    } mode`
   );
 });

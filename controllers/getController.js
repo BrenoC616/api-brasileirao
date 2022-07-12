@@ -2,8 +2,8 @@ const puppeteer = require("puppeteer");
 
 module.exports = {
   async getData(req, res) {
-    const { serie } = req.params;
-    const series = ["a", "b", "c"];
+    //const { serie } = req.params;
+    //const series = ["a", "b", "c"];
     try {
       const browser = await puppeteer.launch({
         headless: true,
@@ -11,89 +11,18 @@ module.exports = {
       });
       const page = await browser.newPage();
 
-      if (series.includes(serie)) {
-        await page.goto(
-          `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-${serie}/2022`
-        );
-      }
+      //if (series.includes(serie)) {
+      await page.goto(
+        `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-a/2022`
+      );
+      //}
 
       const data = await page.evaluate(() => {
-        const name = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => element.firstChild.lastChild.innerText
+        const clubsNodeList = document.querySelectorAll(
+          "#app > #menu-panel > article table .expand-trigger"
         );
 
-        const points = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[1].innerText)
-        );
-
-        const matches = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[2].innerText)
-        );
-
-        const victories = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[3].innerText)
-        );
-
-        const draws = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[4].innerText)
-        );
-
-        const defeats = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[5].innerText)
-        );
-
-        const goalsFor = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[6].innerText)
-        );
-
-        const goalsAgainst = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[7].innerText)
-        );
-
-        const yellowCards = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[9].innerText)
-        );
-
-        const redCards = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[10].innerText)
-        );
-
-        const performance = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => parseInt(element.cells[11].innerText)
-        );
+        const clubsStats = [...clubsNodeList];
 
         let previousResults = [];
 
@@ -118,32 +47,25 @@ module.exports = {
           previousResults.push(values);
         }
 
-        const nextMatch = Array.from(
-          document.querySelectorAll(
-            "#app > #menu-panel > article table .expand-trigger"
-          ),
-          (element) => element.cells[13].firstChild.title
-        );
-
         let object = {};
 
         for (let i = 0; i < 20; i++) {
           object[i + 1] = {
             position: i + 1,
-            name: name[i],
-            points: points[i],
-            matches: matches[i],
-            victories: victories[i],
-            draws: draws[i],
-            defeats: defeats[i],
-            goalsFor: goalsFor[i],
-            goalsAgainst: goalsAgainst[i],
-            goalsDifference: goalsFor[i] - goalsAgainst[i],
-            yellowCards: yellowCards[i],
-            redCards: redCards[i],
-            performance: performance[i] + "%",
+            name: clubsStats[i].cells[0].children[4].innerText,
+            points: clubsStats[i].cells[1].innerText,
+            matches: clubsStats[i].cells[2].innerText,
+            victories: clubsStats[i].cells[3].innerText,
+            draws: clubsStats[i].cells[4].innerText,
+            defeats: clubsStats[i].cells[5].innerText,
+            goalsFor: clubsStats[i].cells[6].innerText,
+            goalsAgainst: clubsStats[i].cells[7].innerText,
+            goalsDifference: clubsStats[i].cells[8].innerText,
+            yellowCards: clubsStats[i].cells[9].innerText,
+            redCards: clubsStats[i].cells[10].innerText,
+            performance: clubsStats[i].cells[11].innerText + "%",
             previousResults: previousResults[i],
-            nextMatch: nextMatch[i],
+            nextMatch: clubsStats[i].cells[13].firstChild.title,
           };
         }
 
