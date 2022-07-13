@@ -6,6 +6,7 @@ const setCache = (req, res, next) => {
   const period = 60 * 60;
   if (req.method == "GET") {
     res.set("Cache-Control", `s-maxage=${period}, stale-while-revalidate`);
+    res.set("Access-Control-Allow-Origin", "*");
   } else {
     res.set("Cache-Control", `no-store`);
   }
