@@ -5,9 +5,9 @@ const routes = require("./routes.js");
 const setCache = (req, res, next) => {
   const period = 60 * 60;
   if (req.method == "GET") {
-    res.set("Cache-control", `public, max-age=${period}`);
+    res.set("Cache-Control", `s-maxage=${period}, stale-while-revalidate`);
   } else {
-    res.set("Cache-control", `no-store`);
+    res.set("Cache-Control", `no-store`);
   }
 
   next();
