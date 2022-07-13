@@ -1,18 +1,41 @@
 const puppeteer = require("puppeteer");
+const etag = require("etag");
 
 module.exports = {
   async getData(req, res) {
-    try {
-      const { year } = req.params;
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
-      const page = await browser.newPage();
-      await page.goto(
-        `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-a/2022`
-      );
+    const { year } = req.params;
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
 
+    await page.setRequestInterception(true);
+
+    page.on("request", (request) => {
+      if (
+        request.resourceType() === "script" ||
+        request.resourceType() === "stylesheet" ||
+        request.resourceType() === "image" ||
+        request.resourceType() === "font" ||
+        request.resourceType() === "manifest" ||
+        request.resourceType() === "fetch" ||
+        request.resourceType() === "xhr" ||
+        request.resourceType() === "websocket" ||
+        request.resourceType() === "other"
+      ) {
+        request.abort();
+      } else {
+        request.continue();
+      }
+    });
+
+    await page.goto(
+      `https://www.cbf.com.br/futebol-brasileiro/competicoes/campeonato-brasileiro-serie-a/2022`,
+      { waitUntil: "domcontentloaded" }
+    );
+
+    try {
       const data = await page.evaluate(() => {
         let clubsNodeList;
 
@@ -37,7 +60,7 @@ module.exports = {
 
           object[index + 1] = {
             position: index + 1,
-            name: club.cells[0].lastChild.innerText,
+            name: club.cells[0].children[3].title,
             points: parseInt(club.cells[1].innerText),
             matches: parseInt(club.cells[2].innerText),
             victories: parseInt(club.cells[3].innerText),
@@ -73,6 +96,7 @@ module.exports = {
 
       await browser.close();
 
+      res.set("ETag", etag(JSON.stringify(data)));
       res.status(200).json(data);
     } catch (error) {
       res.status(400).json({ message: "Bad Request", error: error.message });
