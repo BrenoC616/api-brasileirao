@@ -5,7 +5,7 @@ module.exports = {
   async getData(req, res) {
     const { year } = req.params;
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
@@ -87,7 +87,7 @@ module.exports = {
             nextMatch:
               club.cells[13] === undefined || club.cells[13].firstChild === null
                 ? "Not Found"
-                : club.cells[13].firstChild.title,
+                : club.cells[13].firstElementChild.title,
           };
         });
 
